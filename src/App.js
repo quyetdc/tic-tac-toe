@@ -12,9 +12,7 @@ function Square({value, onSquareClick}) {
 }
 
 // TODO:
-// For the current move only, show “You are at move #…” instead of a button.
 
-// Rewrite Board to use two loops to make the squares instead of hardcoding them.
 // Add a toggle button that lets you sort the moves in either ascending or descending order.
 // When someone wins, highlight the three squares that caused the win (and when no one wins, display a message about the result being a draw).
 // Display the location for each move in the format (row, col) in the move history list.
@@ -76,6 +74,9 @@ export default function Game() {
 }
 
 function Board({ xIsNext, squares, onPlay }) {
+  const totalRows = 3;
+  const totalCols = 3;
+
   const winner = calculateWinner(squares);
 
   let status;
@@ -101,27 +102,23 @@ function Board({ xIsNext, squares, onPlay }) {
     onPlay(nextSquares);
   }
 
+  const board = [];
+  let rows = [];
+
+  for (let row = 0; row < totalRows; row++) {
+    rows = [];
+    for (let col = 0; col < totalCols; col++) {
+      rows.push(<Square value={squares[row*3 + col]} onSquareClick={() => handleClick(row*3 + col)} />);
+    }
+
+    board.push(<div className="board-row">{rows}</div>)
+  }
+
   return (
     <>
       <div className="status">{status}</div>
 
-      <div className="board-row">
-        <Square value={squares[0]} onSquareClick={() => handleClick(0)} />
-        <Square value={squares[1]} onSquareClick={() => handleClick(1)} />
-        <Square value={squares[2]} onSquareClick={() => handleClick(2)} />
-      </div>
-
-      <div className="board-row">
-        <Square value={squares[3]} onSquareClick={() => handleClick(3)} />
-        <Square value={squares[4]} onSquareClick={() => handleClick(4)} />
-        <Square value={squares[5]} onSquareClick={() => handleClick(5)} />
-      </div>
-
-      <div className="board-row">
-        <Square value={squares[6]} onSquareClick={() => handleClick(6)} />
-        <Square value={squares[7]} onSquareClick={() => handleClick(7)} />
-        <Square value={squares[8]} onSquareClick={() => handleClick(8)} />
-      </div>
+      {board}
     </>
   );
 }
