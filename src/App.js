@@ -13,13 +13,17 @@ function Square({value, onSquareClick}) {
 
 // TODO:
 
-// Add a toggle button that lets you sort the moves in either ascending or descending order.
+// Refactoring
+  // - file structure
+  // - short moves / orders
+
 // When someone wins, highlight the three squares that caused the win (and when no one wins, display a message about the result being a draw).
 // Display the location for each move in the format (row, col) in the move history list.
 
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [moveOrder, setMoveOrder] = useState("asc");
 
   const xIsNext = currentMove % 2 === 0;
 
@@ -32,33 +36,17 @@ export default function Game() {
     setCurrentMove(nextHistory.length - 1);
   }
 
-  function jumpTo(nextMove) {
+  function handleMove(nextMove) {
     setCurrentMove(nextMove);
   }
 
-  const moves = history.map((squares, move) => {
-    let description;
-
-    if (move === currentMove) {
-      return (
-        <li key={currentMove}>
-          You are at move #{currentMove}
-        </li>
-      )
-    }
-
-    if (move > 0) {
-      description = "Go to move #" + move;
+  function reorderMove(){
+    if (moveOrder == "asc") {
+      setMoveOrder("desc");
     } else {
-      description = "Go to game start";
+      setMoveOrder("asc");
     }
-
-    return (
-      <li key={move}>
-        <button onClick={ () => jumpTo(move)}> {description} </button>
-      </li>
-    )
-  });
+  }
 
   return (
     <div className="game">
@@ -67,7 +55,8 @@ export default function Game() {
       </div>
 
       <div className="game-info">
-        <ol> { moves } </ol>
+        <Short reorderMove={reorderMove}/>
+        <Moves history={history} currentMove={currentMove} moveOrder={moveOrder} handleMove={handleMove}/>
       </div>
     </div>
   );
@@ -121,6 +110,50 @@ function Board({ xIsNext, squares, onPlay }) {
       {board}
     </>
   );
+}
+
+function Moves({ history, currentMove, moveOrder, handleMove }) {
+  const displayMoves = [];
+
+  for (let index = 0; index < history.length; index++) {
+    let move, description;
+
+    if (index > 0) {
+      description = "Go to move #" + index;
+    } else {
+      description = "Go to game start";
+    }
+
+    if (index === currentMove) {
+      move = (
+        <li key={currentMove}>
+          You are at move #{currentMove}
+        </li>
+      )
+    } else {
+      move = ( <li key={index}>
+        <button onClick={ () => handleMove(index)}> {description} </button>
+      </li>);
+    }
+
+    if (moveOrder === "desc") {
+      displayMoves.unshift(move);
+    } else {
+      displayMoves.push(move);
+    }
+  }
+
+  return (
+    <ol>{displayMoves}</ol>
+  )
+}
+
+function Short({reorderMove}) {
+  return (
+    <div>
+      <button onClick={() => reorderMove()}>Short Moves</button>
+    </div>
+  )
 }
 
 function calculateWinner(squares) {
