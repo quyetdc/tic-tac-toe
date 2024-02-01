@@ -3,11 +3,6 @@ import { Board } from "./Board";
 import { Moves } from "./Move";
 import { Short } from "./Short";
 
-// TODO:
-
-// When someone wins, highlight the three squares that caused the win (and when no one wins, display a message about the result being a draw).
-// Display the location for each move in the format (row, col) in the move history list.
-
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
